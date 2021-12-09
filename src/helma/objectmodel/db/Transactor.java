@@ -440,6 +440,11 @@ public class Transactor {
                 }
             }
         }
+        
+        if (hasListeners) {
+            nmgr.fireNodeChangeEvent(insertedNodes, updatedNodes,
+                                     deletedNodes, modifiedParentNodes);
+        }
 
         // clear the node collections
         recycle();
