@@ -106,7 +106,7 @@
             token="__builddate__" value="${TODAY}"/>
         <javac srcdir="${build.work}/src"
             source="7"
-            target="11"
+            target="8"
             destdir="${build.classes}"
             debug="${debug}"
             deprecation="${deprecation}"
