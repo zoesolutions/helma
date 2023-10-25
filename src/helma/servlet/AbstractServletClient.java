@@ -576,9 +576,19 @@ public abstract class AbstractServletClient extends HttpServlet {
             // If protected session cookies are enabled we also force a new session
             // if the existing session id doesn't match the client's ip address
             StringBuffer buffer = new StringBuffer();
-            addIPAddress(buffer, request.getRemoteAddr());
-            addIPAddress(buffer, request.getHeader("X-Forwarded-For")); //$NON-NLS-1$
-            addIPAddress(buffer, request.getHeader("Client-ip")); //$NON-NLS-1$
+            if (request.getHeader("Client-ip") != null) {
+                // use Client-ip
+            	addIPAddress(buffer, request.getHeader("Client-ip")); //$NON-NLS-1$
+            }
+            else if(request.getHeader("X-Forwarded-For") != null) {
+                // use X-Forwarded-For
+            	addIPAddress(buffer, request.getHeader("X-Forwarded-For")); //$NON-NLS-1$
+            }
+            else {
+                // use remote address
+            	addIPAddress(buffer, request.getRemoteAddr());
+            }
+            
             if (reqtrans.getSession() == null || !reqtrans.getSession().startsWith(buffer.toString())) {
                 createSession(response, buffer.toString(), reqtrans, domain);
             }
@@ -607,7 +617,7 @@ public abstract class AbstractServletClient extends HttpServlet {
                     this.random.nextLong() + Runtime.getRuntime().freeMemory() ^ hashCode();
             if (l < 0)
                 l = -l;
-            id = prefix + Long.toString(l, 36);
+            id = prefix + Long.toString(l, 16);
         }
 
         reqtrans.setSession(id);
