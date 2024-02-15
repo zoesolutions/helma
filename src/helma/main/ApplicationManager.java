@@ -490,6 +490,7 @@ public class ApplicationManager implements XmlRpcHandler {
                         ResourceHandler rhandler = new ResourceHandler();
                         rhandler.setResourceBase(staticContent.getPath());
                         rhandler.setWelcomeFiles(staticHome);
+                        rhandler.setDirectoriesListed(staticIndex);
 
                         staticContext = ApplicationManager.this.context.addContext(staticMountpoint, ""); //$NON-NLS-1$
                         staticContext.setHandler(rhandler);
