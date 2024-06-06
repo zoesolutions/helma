@@ -532,6 +532,11 @@ public final class NodeManager {
                     Relation rel = col.getRelation();
                     Property p = rel == null ? null : node.getProperty(rel.getPropName());
 
+                    // skip readonly relations
+                    if (rel.readonly) {
+                        continue;
+                    }
+
                     if (p != null) {
                         setStatementValue(stmt, columnNumber, p, col.getType());
                     } else if (col.isNameField()) {

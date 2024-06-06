@@ -1215,6 +1215,15 @@ public final class DbMapping {
 
         for (int i = 0; i < cols.length; i++) {
             if (cols[i].isMapped()) {
+                // skip readonly relations
+                if (!cols[i].isIdField() && !cols[i].isPrototypeField()) {
+                    Relation rel = cols[i].getRelation();
+
+                    if (rel.readonly) {
+                        continue;
+                    }
+                }
+
                 if (needsComma) {
                     b1.append(", "); //$NON-NLS-1$
                     b2.append(", "); //$NON-NLS-1$
