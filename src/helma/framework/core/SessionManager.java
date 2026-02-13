@@ -188,6 +188,11 @@ public class SessionManager {
         if (f == null) {
             f = new File(this.app.dbDir, "sessions"); //$NON-NLS-1$
         }
+        
+        // if session file doesn't exist or is empty, nothing to load
+        if (!f.exists() || f.length() == 0) {
+            return;
+        }
 
         // compute session timeout value
         int sessionTimeout = 30;
@@ -231,13 +236,15 @@ public class SessionManager {
         } catch (FileNotFoundException fnf) {
             // suppress error message if session file doesn't exist
             tx.abort();
+        } catch (java.io.EOFException eof) {
+            // empty or truncated session file -> ignore and continue
+            tx.abort();
         } catch (Exception e) {
             this.app.logError(Messages.getString("SessionManager.6"), e); //$NON-NLS-1$
             tx.abort();
         } finally {
             tx.closeConnections();
         }
-
     }
 
     /**
