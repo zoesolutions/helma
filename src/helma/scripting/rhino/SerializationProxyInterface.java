@@ -123,6 +123,9 @@ class HopObjectProxy implements SerializationProxyInterface {
             return engine.core.getPrototype((String) this.ref);
         else if (this.ref instanceof NodeHandle) {
             Object n = ((NodeHandle) this.ref).getNode(engine.app.getWrappedNodeManager());
+            if (n == null) {
+                return null;
+            }
             return this.wrapped ? Context.toObject(n, engine.global) : n;
         }
         return Context.toObject(this.ref, engine.global);

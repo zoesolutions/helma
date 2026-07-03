@@ -755,6 +755,9 @@ public final class RhinoCore implements ScopeProvider {
         }
 
         if (hobj == null) {
+            if (handle.getKey() == null) {
+                return null;
+            }
             String protoName = handle.getKey().getStorageName();
             Scriptable op = getValidPrototype(protoName);
 

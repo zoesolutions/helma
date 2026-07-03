@@ -11,6 +11,10 @@
 
 package helma.objectmodel.db;
 
+import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import helma.objectmodel.NodeInterface;
@@ -38,7 +42,7 @@ public final class NodeHandle implements Serializable {
     static final long serialVersionUID = 3067763116576910931L;
 
     // direct reference to the node
-    private Node node;
+    private transient Node node;
 
     // the node's key
     private KeyInterface key;
@@ -79,6 +83,9 @@ public final class NodeHandle implements Serializable {
         if (this.node != null) {
             return this.node;
         }
+        if (this.key == null) {
+            return null;
+        }
         return nodemgr.getNode(this.key);
     }
 
@@ -104,7 +111,7 @@ public final class NodeHandle implements Serializable {
      */
     public String getID() {
         if (this.key == null) {
-            return this.node.getID();
+            return this.node == null ? null : this.node.getID();
         }
         return this.key.getID();
     }
@@ -128,9 +135,23 @@ public final class NodeHandle implements Serializable {
         if (other instanceof NodeHandle) {
             Object obj1 = getObject();
             Object obj2 = ((NodeHandle) other).getObject();
-            return obj1 == obj2 || obj1.equals(obj2);
+            return obj1 == obj2 || (obj1 != null && obj1.equals(obj2));
         }
         return false;
+    }
+
+    private void writeObject(ObjectOutputStream out)
+            throws IOException {
+        if (this.key == null && this.node != null) {
+            throw new NotSerializableException("Transient NodeHandle cannot be serialized");
+        }
+        out.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        this.node = null;
     }
 
     /**
